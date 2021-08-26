@@ -19,5 +19,5 @@ spec:
     size: 4096
   issuerRef:
     name: devopsbyexample-io-ca
-    kind: ClusterIssuer
+    kind: Issuer
     group: cert-manager.io
