@@ -8,9 +8,13 @@
 - [Helm 3](https://helm.sh/)
 
 ## Intro
+- Clean Documentation
 - What is certificate authority?
+- How certificates singed using private key (Flow csr -> cer)
 - What is PKI(Public key infrastructure)?
 - Cert manager components
+- Difference between Issuer vs ClusterIssuer (Namespaced/K8s secrets location)
+- 1,2 use cases for Internal services such as Grafana, example 3 for publicly facing
 
 ## Deploy Prometheus on Kubernetes
 - Install Prometheus
@@ -81,8 +85,22 @@ kubectl get pods -n cert-manager
 - [cainjector](https://cert-manager.io/docs/concepts/ca-injector/)
 - [webhook](https://cert-manager.io/docs/concepts/webhook/)
 
+## SelfSigned (Example 1)
+## CA (Example 2)
+- use case for grafana since it's going to be used internally only - protect password with https
+- can i show how to use wireshark to snif passwords???? man in the middle
+- use case for private dns zones (no need VPN)
+- create own hosted zone in route53 (no need VPN)
+## ACME (Example 3)
+
 ## Install Grafana on Kubernetes
+- id: 11001
+- `grafana-dashboard.json`
 ## Monitor Cert Manager with Prometheus and Grafana
+- Port forward Prometheus to localhost
+```bash
+kubectl port-forward svc/prometheus-operated 9090 -n monitoring
+```
 
 ## Clean Up
 - Remove Helm repo
@@ -92,4 +110,8 @@ helm repo remove jetstack
 - Delete Helm release
 ```bash
 helm delete lesson-083 -n cert-manager
+```
+- List all cert-manager resources
+```bash
+kubectl get Issuers,ClusterIssuers,Certificates,CertificateRequests,Orders,Challenges -A
 ```
