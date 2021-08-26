@@ -39,7 +39,7 @@ helm template lesson-083 jetstack/cert-manager \
   --namespace cert-manager \
   --version v1.5.3 \
   --values values.yaml \
-  --output-dir cert-manager
+  --output-dir helm-generated-yaml
 ```
 
 ## Clean Up
