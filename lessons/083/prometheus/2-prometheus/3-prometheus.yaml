@@ -9,7 +9,7 @@ spec:
   serviceAccountName: prometheus
   serviceMonitorSelector:
     matchLabels:
-      lesson: "083"
+      prometheus: "083"
   serviceMonitorNamespaceSelector:
     matchLabels:
       monitoring: prometheus

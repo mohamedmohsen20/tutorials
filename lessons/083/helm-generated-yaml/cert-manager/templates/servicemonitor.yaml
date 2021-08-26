@@ -13,7 +13,7 @@ metadata:
     app.kubernetes.io/version: "v1.5.3"
     app.kubernetes.io/managed-by: Helm
     helm.sh/chart: cert-manager-v1.5.3
-    prometheus: default
+    prometheus: 083
 spec:
   jobLabel: lesson-083-cert-manager
   selector:

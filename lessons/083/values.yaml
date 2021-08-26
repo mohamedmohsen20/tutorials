@@ -4,5 +4,4 @@ prometheus:
   enabled: true
   servicemonitor:
     enabled: true
-    prometheusInstance: default
-    labels: {}
+    prometheusInstance: "083"
