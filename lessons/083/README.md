@@ -15,6 +15,7 @@
 - Cert manager components
 - Difference between Issuer vs ClusterIssuer (Namespaced/K8s secrets location)
 - 1,2 use cases for Internal services such as Grafana, example 3 for publicly facing
+- How DNS works and how to resolve private DNS such as route53
 
 ## Deploy Prometheus on Kubernetes
 - Install Prometheus
@@ -23,6 +24,10 @@ kubectl apply -f prometheus/0-crd
 kubectl apply -f prometheus/1-prometheus-operator
 kubectl apply -f prometheus/2-prometheus
 kubectl get pods -n monitoring
+```
+## Deploy Grafana on Kubernetes
+```bash
+kubectl apply -f grafana
 ```
 
 ## Install Cert Manager Helm & YAML

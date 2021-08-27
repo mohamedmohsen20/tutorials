@@ -2,17 +2,17 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: grafana-devopsbyexample-io
+  name: blog-devopsbyexample-io
   namespace: staging
 spec:
   isCA: false
   duration: 2160h # 90d
   renewBefore: 360h # 15d
-  commonName: grafana.devopsbyexample.io
+  commonName: blog.devopsbyexample.io
   dnsNames:
-  - grafana.devopsbyexample.io
-  - www.grafana.devopsbyexample.io
-  secretName: grafana-devopsbyexample-io-key-pair
+  - blog.devopsbyexample.io
+  - www.blog.devopsbyexample.io
+  secretName: blog-devopsbyexample-io-key-pair
   privateKey:
     algorithm: RSA
     encoding: PKCS1
