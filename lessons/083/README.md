@@ -25,10 +25,6 @@ kubectl apply -f prometheus/1-prometheus-operator
 kubectl apply -f prometheus/2-prometheus
 kubectl get pods -n monitoring
 ```
-## Deploy Grafana on Kubernetes
-```bash
-kubectl apply -f grafana
-```
 
 ## Install Cert Manager Helm & YAML
 
@@ -71,10 +67,10 @@ kubectl apply -f cert-manager-ns.yaml
 
 - Install cert-manager with Helm
 ```bash
-helm install lesson-083 jetstack/cert-manager \
+helm install cert-083 jetstack/cert-manager \
   --namespace cert-manager \
   --version v1.5.3 \
-  --values values.yaml
+  --values cert-manager-values.yaml
 ```
 
 - Get Helm releases
@@ -96,6 +92,28 @@ kubectl get pods -n cert-manager
 - can i show how to use wireshark to snif passwords???? man in the middle
 - use case for private dns zones (no need VPN)
 - create own hosted zone in route53 (no need VPN)
+
+## Deploy Nginx Ingress Controller
+```bash
+helm repo add ingress-nginx \
+  https://kubernetes.github.io/ingress-nginx
+```
+```bash
+helm repo update
+```
+```bash
+helm install ing-083 ingress-nginx/ingress-nginx \
+  --namespace ingress \
+  --version 4.0.1 \
+  --values nginx-ingress-values.yaml \
+  --create-namespace
+```
+
+## Deploy Grafana on Kubernetes
+```bash
+kubectl apply -f grafana
+```
+
 ## ACME (Example 3)
 
 ## Install Grafana on Kubernetes
@@ -111,6 +129,7 @@ kubectl port-forward svc/prometheus-operated 9090 -n monitoring
 - Remove Helm repo
 ```bash
 helm repo remove jetstack
+helm repo remove ingress-nginx
 ```
 - Delete Helm release
 ```bash
