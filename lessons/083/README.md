@@ -18,7 +18,6 @@
 - How DNS works and how to resolve private DNS such as route53
 
 ## Deploy Prometheus on Kubernetes
-- Install Prometheus
 ```bash
 kubectl apply -f prometheus/0-crd
 kubectl apply -f prometheus/1-prometheus-operator
