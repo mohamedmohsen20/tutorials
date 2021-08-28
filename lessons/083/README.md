@@ -85,21 +85,92 @@ kubectl get pods -n cert-manager
 - [cainjector](https://cert-manager.io/docs/concepts/ca-injector/)
 - [webhook](https://cert-manager.io/docs/concepts/webhook/)
 
-## SelfSigned (Example 1)
-## CA (Example 2)
-- use case for grafana since it's going to be used internally only - protect password with https
-- can i show how to use wireshark to snif passwords???? man in the middle
-- use case for private dns zones (no need VPN)
-- create own hosted zone in route53 (no need VPN)
+## Generate Self Signed Certificate (Example 1)
+- Create SelfSigned ClusterIssuer `example-1/0-self-signed-Issuer.yaml`
+
+- Generate Self Signed Certificate `example-1/1-ca-certificate.yaml`
+```bash
+kubectl apply -f example-1
+```
+
+- Get certificate
+```bash
+kubectl get certificate -n cert-manager
+```
+
+- Get secrets
+```bash
+kubectl get secrets -n cert-manager
+```
+
+- Get x509 certificate
+```bash
+kubectl get secrets devopsbyexample-io-key-pair -o yaml -n cert-manager
+```
+
+- Decode base64 certificte
+```bash
+echo "base64" | base64 -d -o ca.crt
+```
+
+- Decode CA certificate
+```bash
+openssl x509 -in ca.crt -text -noout
+```
+
+## Generate TLS Certificate using CA (Example 2)
+- Create CA ClusterIssuer `example-2/0-ca-issuer.yaml`
+
+- Create `staging` namespace `example-2/1-staging-ns.yaml`
+
+- Create certificate for blog.devopsbyexample.io `example-2/example-2/2-blog-certificate.yaml`
+```bash
+kubectl apply -f example-2
+```
+
+- Get certificate
+```bash
+kubectl get certificate -n staging
+```
+
+- Get secrets
+```bash
+kubectl get secrets -n staging
+```
+
+- Get x509 certificate
+```bash
+kubectl get secrets blog-devopsbyexample-io-key-pair -o yaml -n staging
+```
+
+- Decode base64 certificte
+```bash
+echo "base64" | base64 -d -o blog-devopsbyexample-io.crt
+```
+
+- Decode CA certificate
+```bash
+openssl x509 -in blog-devopsbyexample-io.crt -text -noout
+```
 
 ## Deploy Nginx Ingress Controller
+- Add ingress-nginx Helm repo
 ```bash
 helm repo add ingress-nginx \
   https://kubernetes.github.io/ingress-nginx
 ```
+
+- Update Helm repos
 ```bash
 helm repo update
 ```
+
+- Search for Nginx Helm Chart
+```bash
+helm search repo ingress-nginx
+```
+
+- Install Nginx Ingress
 ```bash
 helm install ing-083 ingress-nginx/ingress-nginx \
   --namespace ingress \
@@ -109,6 +180,11 @@ helm install ing-083 ingress-nginx/ingress-nginx \
 ```
 
 ## Deploy Grafana on Kubernetes
+
+- use case for grafana since it's going to be used internally only - protect password with https
+- can i show how to use wireshark to snif passwords???? man in the middle
+- use case for private dns zones (no need VPN)
+- create own hosted zone in route53 (no need VPN)
 ```bash
 kubectl apply -f grafana
 ```
