@@ -2,6 +2,9 @@
 controller:
   ingressClassResource: 
     name: external-nginx
+  watchIngressWithoutClass: true
+  extraArgs:
+    ingress-class: external-nginx
   admissionWebhooks:
     enabled: false
   service:

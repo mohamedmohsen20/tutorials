@@ -272,26 +272,84 @@ sudo tshark -i en1 -x -f "host 52.207.88.124 and port 443" > login-https.pcap
 cat login-https.pcap
 ```
 
-http://seclists.org/tcpdump/2004/q4/95
-apture HTTP GET requests. This looks for the bytes 'G', 'E', 'T', and ' ' (hex values 47, 45, 54, and 20) just after the TCP header. "tcp[12:1] & 0xf0) >> 2" figures out the TCP header length. From Jefferson Ogata via the tcpdump-workers mailing list.
+## Secure NGINX ingress with Let's Encrypt & ACME (Example 3)
+- Create `letsencrypt-staging` Issuer in `monitoring` namespace
+  - `example-4/letsencrypt-staging-issuer.yaml`
 
+- Create `letsencrypt-staging` Issuer in `monitoring` namespace
+  - `example-4/letsencrypt-prod-issuer.yaml`
 
-
-- use case for grafana since it's going to be used internally only - protect password with https
-- can i show how to use wireshark to snif passwords???? man in the middle
-- use case for private dns zones (no need VPN)
-- create own hosted zone in route53 (no need VPN)
-
-## ACME (Example 3)
-
-## Install Grafana on Kubernetes
-- id: 11001
-- `grafana-dashboard.json`
-## Monitor Cert Manager with Prometheus and Grafana
-- Port forward Prometheus to localhost
 ```bash
-kubectl port-forward svc/prometheus-operated 9090 -n monitoring
+kubectl apply -f example-4
 ```
+
+- Get issuers in `monitoring` namespace
+```bash
+kubectl get issuers -n monitoring
+```
+
+- If it's not ready describe to get error message
+```bash
+kubectl describe issuer letsencrypt-prod -n monitoring
+```
+
+- Create Prometheus ingress with `letsencrypt-prod` issuer
+  - `example-4/2-prometheus-ing.yaml`
+
+- Watch CRDs
+```bash
+kubectl get Certificates -n monitoring --watch
+kubectl get CertificateRequests -n monitoring --watch
+kubectl get Orders -n monitoring --watch
+kubectl get Challenges -n monitoring --watch
+```
+
+- Apply Prometheus ingress
+```bash
+kubectl apply -f example-4/2-prometheus-ing.yaml
+```
+
+- Describe certificate first
+```bash
+kubectl get certificate -n monitoring
+kubectl describe certificate prometheus-devopsbyexample-io-key-pair -n monitoring
+```
+
+- Describe certificate request
+```bash
+kubectl get certificaterequests -n monitoring
+kubectl describe certificaterequests prometheus-devopsbyexample-io-key-pair-<id> -n monitoring
+```
+
+- Describe order
+```bash
+kubectl get orders -n monitoring
+kubectl describe orders prometheus-devopsbyexample-io-key-pair-<id> -n monitoring
+```
+
+- Describe challenge
+```bash
+kubectl get challenges -n monitoring
+kubectl describe challenges prometheus-devopsbyexample-io-key-pair-<id> -n monitoring
+```
+
+- Make sure that all pods are up in monitoring namespace including `cm-acme-http-solver-<id>`
+```bash
+kubectl get pods -n monitoring
+```
+
+- To complete we need to create CNAME record for prometheus
+```bash
+kubectl get ing -n monitoring
+```
+
+
+
+## Delegate a Subdomain to Route53
+> [Creating a subdomain that uses Amazon Route 53 as the DNS service without migrating the parent domain](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
+
+## Monitor Cert Manager with Prometheus and Grafana
+
 
 ## Clean Up
 - Remove Helm repo
@@ -312,3 +370,20 @@ kubectl get Issuers,ClusterIssuers,Certificates,CertificateRequests,Orders,Chall
 brew remove wireshark
 ```
 - Remove `devopsbyexample.io` CA
+
+
+## Notes
+http://seclists.org/tcpdump/2004/q4/95
+apture HTTP GET requests. This looks for the bytes 'G', 'E', 'T', and ' ' (hex values 47, 45, 54, and 20) just after the TCP header. "tcp[12:1] & 0xf0) >> 2" figures out the TCP header length. From Jefferson Ogata via the tcpdump-workers mailing list.
+
+- use case for grafana since it's going to be used internally only - protect password with https
+
+- can i show how to use wireshark to snif passwords???? man in the middle
+
+- use case for private dns zones (no need VPN)
+
+- create own hosted zone in route53 (no need VPN)
+
+Nginx Ingress Class: https://github.com/kubernetes/ingress-nginx/blob/1510c06045ece4e199ebec85e7ec90cf15e19747/docs/index.md
+
+--watch-ingress-without-class=true
