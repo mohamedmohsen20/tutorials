@@ -1,4 +1,4 @@
-# Cert Manager Kubernetes Tutorial (Let's Encrypt & Nginx Ingress & ACME | YAML & HELM | 3 Examples)
+# Cert Manager Kubernetes Tutorial (Let's Encrypt & Nginx Ingress & ACME | YAML & HELM | 5 Examples)
 
 [YouTube Tutorial]()
 
@@ -25,7 +25,7 @@ kubectl apply -f prometheus/2-prometheus
 kubectl get pods -n monitoring
 ```
 
-## Install Cert Manager Helm & YAML
+## Deploy Cert Manager Helm & YAML
 
 - Review default helm [values](https://github.com/jetstack/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml)
 
@@ -53,10 +53,10 @@ helm search repo cert-manager
 - Generate YAML files
 
 ```bash
-helm template lesson-083 jetstack/cert-manager \
+helm template cert-083 jetstack/cert-manager \
   --namespace cert-manager \
   --version v1.5.3 \
-  --values values.yaml \
+  --values cert-manager-values.yaml \
   --output-dir helm-generated-yaml
 ```
 - Create `cert-manager` namespace
