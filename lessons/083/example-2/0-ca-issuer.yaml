@@ -1,9 +1,8 @@
 ---
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: devopsbyexample-io-ca
-  namespace: staging
 spec:
   ca:
     secretName: devopsbyexample-io-key-pair
