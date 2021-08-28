@@ -350,6 +350,116 @@ kubectl get ing -n monitoring
 
 ## Monitor Cert Manager with Prometheus and Grafana
 
+- Create `monitoring.devopsbyexample.io` Route53 hosted zone
+
+- Get Name Servers from `Hosted zone details`
+
+- Add NS records for the subdomain `monitoring`
+
+- Create A record to test route53 zone `test.monitoring.devopsbyexample.io` -> 10.10.10.10
+
+- Wait up to 1 minute and test with dig
+
+```bash
+dig +short test.monitoring.devopsbyexample.io
+```
+
+## Create IAM Role for Kubernetes Service Account
+
+- Create OpenID Connect provider, use `sts.amazonaws.com` for Audience
+
+- Create IAM policy with Route53 access
+  - `CertManagerRoute53Access`
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "route53:GetChange",
+      "Resource": "arn:aws:route53:::change/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "route53:ChangeResourceRecordSets",
+        "route53:ListResourceRecordSets"
+      ],
+      "Resource": "arn:aws:route53:::hostedzone/Z00637903L4LNI5ZNF0EQ"
+    }
+  ]
+}
+```
+
+- Create IAM role for `cert-manager-acme` cert-manager
+
+- Get service account name for cert-manager
+```bash
+kubectl get sa -n cert-manager
+```
+
+- Update trust for IAM role to allow only `cert-083-cert-manager` service account to assume it
+```
+aud -> sub
+sts.amazonaws.com -> system:serviceaccount:cert-manager:cert-083-cert-manager
+```
+
+- Update service account manually, add following line to annotations
+```bash
+kubectl edit sa -n cert-manager
+```
+```yaml
+eks.amazonaws.com/role-arn: arn:aws:iam::424432388155:role/cert-manager-acme
+```
+
+- Modify the cert-manager Deployment with the correct file system permissions, so the ServiceAccount token can be read.
+```bash
+kubectl get deployment -n cert-manager
+kubectl edit deployment cert-083-cert-manager -n cert-manager
+```
+```yaml
+spec:
+  template:
+    spec:
+      securityContext:
+        fsGroup: 1001
+```
+```yaml
+- --issuer-ambient-credentials=true
+```
+
+- This change can be inclused to Helm Chart (include to `cert-manager-values.yaml` before installing or upgrade Helm release)
+```yaml
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::424432388155:role/cert-manager-acme
+securityContext:
+  enabled: true
+  fsGroup: 1001
+extraArgs: 
+- --issuer-ambient-credentials=true
+```
+
+## Resolve DNS-01 challenge with cert-manager (Example 5)
+
+- Create Issuer to use dns-01 challenge
+  - `example-5/0-letsencrypt-staging-dns01-issuer.yaml`
+
+```bash
+kubectl apply -f example-5/0-letsencrypt-staging-dns01-issuer.yaml
+```
+
+- List Issuers in monitoring namespace
+```bash
+kubectl get issuers -n monitoring
+```
+
+- Describe `letsencrypt-dns01-staging` issuer
+```bash
+kubectl describe issuer letsencrypt-dns01-staging -n monitoring
+```
+
+https://cert-manager.io/docs/configuration/acme/dns01/route53/
 
 ## Clean Up
 - Remove Helm repo

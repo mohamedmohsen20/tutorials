@@ -2,15 +2,15 @@
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: letsencrypt-prod
+  name: letsencrypt-http01-staging
   namespace: monitoring
 spec:
   acme:
-    server: https://acme-v02.api.letsencrypt.org/directory
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
     email: me@antonputra.com
     privateKeySecretRef:
-      name: letsencrypt-prod-key-pair
+      name: letsencrypt-staging-http01-key-pair
     solvers:
     - http01:
         ingress:
-          class:  external-nginx
+          class: external-nginx
