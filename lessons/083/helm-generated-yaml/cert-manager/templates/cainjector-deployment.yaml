@@ -3,12 +3,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lesson-083-cert-manager-cainjector
+  name: cert-083-cert-manager-cainjector
   namespace: "cert-manager"
   labels:
     app: cainjector
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/instance: lesson-083
+    app.kubernetes.io/instance: cert-083
     app.kubernetes.io/component: "cainjector"
     app.kubernetes.io/version: "v1.5.3"
     app.kubernetes.io/managed-by: Helm
@@ -18,20 +18,20 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: cainjector
-      app.kubernetes.io/instance: lesson-083
+      app.kubernetes.io/instance: cert-083
       app.kubernetes.io/component: "cainjector"
   template:
     metadata:
       labels:
         app: cainjector
         app.kubernetes.io/name: cainjector
-        app.kubernetes.io/instance: lesson-083
+        app.kubernetes.io/instance: cert-083
         app.kubernetes.io/component: "cainjector"
         app.kubernetes.io/version: "v1.5.3"
         app.kubernetes.io/managed-by: Helm
         helm.sh/chart: cert-manager-v1.5.3
     spec:
-      serviceAccountName: lesson-083-cert-manager-cainjector
+      serviceAccountName: cert-083-cert-manager-cainjector
       securityContext:
         runAsNonRoot: true
       containers:

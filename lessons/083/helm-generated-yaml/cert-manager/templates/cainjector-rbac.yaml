@@ -3,11 +3,11 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: lesson-083-cert-manager-cainjector
+  name: cert-083-cert-manager-cainjector
   labels:
     app: cainjector
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/instance: lesson-083
+    app.kubernetes.io/instance: cert-083
     app.kubernetes.io/component: "cainjector"
     app.kubernetes.io/version: "v1.5.3"
     app.kubernetes.io/managed-by: Helm
@@ -39,11 +39,11 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: lesson-083-cert-manager-cainjector
+  name: cert-083-cert-manager-cainjector
   labels:
     app: cainjector
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/instance: lesson-083
+    app.kubernetes.io/instance: cert-083
     app.kubernetes.io/component: "cainjector"
     app.kubernetes.io/version: "v1.5.3"
     app.kubernetes.io/managed-by: Helm
@@ -51,9 +51,9 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: lesson-083-cert-manager-cainjector
+  name: cert-083-cert-manager-cainjector
 subjects:
-  - name: lesson-083-cert-manager-cainjector
+  - name: cert-083-cert-manager-cainjector
     namespace: "cert-manager"
     kind: ServiceAccount
 ---
@@ -62,12 +62,12 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: lesson-083-cert-manager-cainjector:leaderelection
+  name: cert-083-cert-manager-cainjector:leaderelection
   namespace: kube-system
   labels:
     app: cainjector
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/instance: lesson-083
+    app.kubernetes.io/instance: cert-083
     app.kubernetes.io/component: "cainjector"
     app.kubernetes.io/version: "v1.5.3"
     app.kubernetes.io/managed-by: Helm
@@ -100,12 +100,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: lesson-083-cert-manager-cainjector:leaderelection
+  name: cert-083-cert-manager-cainjector:leaderelection
   namespace: kube-system
   labels:
     app: cainjector
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/instance: lesson-083
+    app.kubernetes.io/instance: cert-083
     app.kubernetes.io/component: "cainjector"
     app.kubernetes.io/version: "v1.5.3"
     app.kubernetes.io/managed-by: Helm
@@ -113,8 +113,8 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: lesson-083-cert-manager-cainjector:leaderelection
+  name: cert-083-cert-manager-cainjector:leaderelection
 subjects:
   - kind: ServiceAccount
-    name: lesson-083-cert-manager-cainjector
+    name: cert-083-cert-manager-cainjector
     namespace: cert-manager

@@ -3,12 +3,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lesson-083-cert-manager
+  name: cert-083-cert-manager
   namespace: "cert-manager"
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: lesson-083
+    app.kubernetes.io/instance: cert-083
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
     app.kubernetes.io/managed-by: Helm
@@ -18,20 +18,20 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: cert-manager
-      app.kubernetes.io/instance: lesson-083
+      app.kubernetes.io/instance: cert-083
       app.kubernetes.io/component: "controller"
   template:
     metadata:
       labels:
         app: cert-manager
         app.kubernetes.io/name: cert-manager
-        app.kubernetes.io/instance: lesson-083
+        app.kubernetes.io/instance: cert-083
         app.kubernetes.io/component: "controller"
         app.kubernetes.io/version: "v1.5.3"
         app.kubernetes.io/managed-by: Helm
         helm.sh/chart: cert-manager-v1.5.3
     spec:
-      serviceAccountName: lesson-083-cert-manager
+      serviceAccountName: cert-083-cert-manager
       securityContext:
         runAsNonRoot: true
       containers:

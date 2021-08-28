@@ -3,12 +3,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lesson-083-cert-manager-webhook
+  name: cert-083-cert-manager-webhook
   namespace: "cert-manager"
   labels:
     app: webhook
     app.kubernetes.io/name: webhook
-    app.kubernetes.io/instance: lesson-083
+    app.kubernetes.io/instance: cert-083
     app.kubernetes.io/component: "webhook"
     app.kubernetes.io/version: "v1.5.3"
     app.kubernetes.io/managed-by: Helm
@@ -18,20 +18,20 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: webhook
-      app.kubernetes.io/instance: lesson-083
+      app.kubernetes.io/instance: cert-083
       app.kubernetes.io/component: "webhook"
   template:
     metadata:
       labels:
         app: webhook
         app.kubernetes.io/name: webhook
-        app.kubernetes.io/instance: lesson-083
+        app.kubernetes.io/instance: cert-083
         app.kubernetes.io/component: "webhook"
         app.kubernetes.io/version: "v1.5.3"
         app.kubernetes.io/managed-by: Helm
         helm.sh/chart: cert-manager-v1.5.3
     spec:
-      serviceAccountName: lesson-083-cert-manager-webhook
+      serviceAccountName: cert-083-cert-manager-webhook
       securityContext:
         runAsNonRoot: true
       containers:
@@ -42,8 +42,8 @@ spec:
           - --v=2
           - --secure-port=10250
           - --dynamic-serving-ca-secret-namespace=$(POD_NAMESPACE)
-          - --dynamic-serving-ca-secret-name=lesson-083-cert-manager-webhook-ca
-          - --dynamic-serving-dns-names=lesson-083-cert-manager-webhook,lesson-083-cert-manager-webhook.cert-manager,lesson-083-cert-manager-webhook.cert-manager.svc
+          - --dynamic-serving-ca-secret-name=cert-083-cert-manager-webhook-ca
+          - --dynamic-serving-dns-names=cert-083-cert-manager-webhook,cert-083-cert-manager-webhook.cert-manager,cert-083-cert-manager-webhook.cert-manager.svc
           ports:
           - name: https
             protocol: TCP
