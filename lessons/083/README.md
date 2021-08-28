@@ -222,25 +222,59 @@ kubectl get ing -n monitoring
 ```bash
 brew install wireshark
 ```
+
+- Get public ip address of Grafana
 ```bash
-sudo tshark -i en1 -f "dst net 3.208.164.186"
-sudo tshark -i en1 -f "tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)"
-sudo tshark -i en1 -x -f "tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)" > test.pcap
-sudo tshark -i en1 -f "host 3.208.164.186 and port 80"
-sudo tshark -i en1 -f "host 3.208.164.186 and port 80 and tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x47455420"
-sudo tshark -i en1 -f "host 3.208.164.186 and port 80 and tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x504f5354"
-sudo tshark -i en1 -x -f "host 3.208.164.186 and port 80 and tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x504f5354" > login.pcap
-sudo tshark -i en1 -x -f "host 3.208.164.186 and port 443 and tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x504f5354" > login-https.pcap
-sudo tshark -i en1 -x -f "host 3.208.164.186 and port 443"
+dig +short grafana.devopsbyexample.io
+```
+
+- Get network interfaces
+```bash
+ifconfig
+```
+
+- Get POST TCP packets
+```bash
+sudo tshark -i en1 -x -f "host 52.207.88.124 and port 80 and tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x504f5354" > post.pcap
+```
+
+```bash
+cat post.pcap
+```
+
+- Add TLS section to grafana ingress
+  - `example-3/grafana.yaml`
+
+```bash
+kubectl apply -f example-3
+```
+
+- Get certificates in monitoring namespace
+```bash
+kubectl get certificates -n monitoring
+```
+
+- Go to `https://grafana.devopsbyexample.io` to check TLS certs
+
+- Add CA to the keychain
+
+- Login to Grafana
+
+- Listen on port 443
+
+
+```bash
+sudo tshark -i en1 -x -f "host 52.207.88.124 and port 443" > login-https.pcap
+```
+
+- Read the TCP packets
+```bash
+cat login-https.pcap
+```
 
 http://seclists.org/tcpdump/2004/q4/95
 apture HTTP GET requests. This looks for the bytes 'G', 'E', 'T', and ' ' (hex values 47, 45, 54, and 20) just after the TCP header. "tcp[12:1] & 0xf0) >> 2" figures out the TCP header length. From Jefferson Ogata via the tcpdump-workers mailing list.
 
-wireshark Capture filters
-tcpdump -A -r stackoverflow.cap > stackoverflow.txt
-```
-
-kubectl get secrets devopsbyexample-io-key-pair -o yaml -n cert-manager
 
 
 - use case for grafana since it's going to be used internally only - protect password with https
