@@ -85,6 +85,13 @@ kubectl get pods -n cert-manager
 - [cainjector](https://cert-manager.io/docs/concepts/ca-injector/)
 - [webhook](https://cert-manager.io/docs/concepts/webhook/)
 
+- Port forward Prometheus
+```bash
+kubectl port-forward svc/prometheus-operated 9090 -n monitoring
+```
+
+- Go to Prometheus targets `http://localhost:9090`
+
 ## Generate Self Signed Certificate (Example 1)
 - Create SelfSigned ClusterIssuer `example-1/0-self-signed-Issuer.yaml`
 
@@ -181,13 +188,35 @@ helm install ing-083 ingress-nginx/ingress-nginx \
 
 ## Deploy Grafana on Kubernetes
 
-- use case for grafana since it's going to be used internally only - protect password with https
-- can i show how to use wireshark to snif passwords???? man in the middle
-- use case for private dns zones (no need VPN)
-- create own hosted zone in route53 (no need VPN)
+- Deploy Grafana using YAML
+  - `grafana/0-secret.yaml`
+  - `grafana/1-deployment.yaml`
+  - `grafana/2-service.yaml`
+
 ```bash
 kubectl apply -f grafana
 ```
+
+- Get services in monitoring namespaces
+```bash
+kubectl get svc -n monitoring
+```
+
+- Create `HTTP` ingress
+  - `example-3/grafana.yaml`
+
+```bash
+kubectl apply -f example-3
+```
+
+- Get ingresses
+```bash
+kubectl get ing -n monitoring
+```
+
+- Create `CNAME` record for `grafana.devopsbyexample.io`
+
+- Access `http://grafana.devopsbyexample.io`
 
 - Install wireshark
 ```bash
@@ -213,6 +242,11 @@ tcpdump -A -r stackoverflow.cap > stackoverflow.txt
 
 kubectl get secrets devopsbyexample-io-key-pair -o yaml -n cert-manager
 
+
+- use case for grafana since it's going to be used internally only - protect password with https
+- can i show how to use wireshark to snif passwords???? man in the middle
+- use case for private dns zones (no need VPN)
+- create own hosted zone in route53 (no need VPN)
 
 ## ACME (Example 3)
 

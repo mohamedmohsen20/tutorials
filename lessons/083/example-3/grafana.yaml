@@ -4,16 +4,16 @@ kind: Ingress
 metadata:
   name: grafana
   namespace: monitoring
-  annotations:
-    cert-manager.io/cluster-issuer: devopsbyexample-io-ca
-    cert-manager.io/duration: 2160h # 90d
-    cert-manager.io/renew-before: 360h # 15d
+  # annotations:
+  #   cert-manager.io/cluster-issuer: devopsbyexample-io-ca
+  #   cert-manager.io/duration: 2160h # 90d
+  #   cert-manager.io/renew-before: 360h # 15d
 spec:
   ingressClassName: external-nginx
-  tls:
-  - hosts:
-    - grafana.devopsbyexample.io
-    secretName: grafana-devopsbyexample-io-key-pair
+  # tls:
+  # - hosts:
+  #   - grafana.devopsbyexample.io
+  #   secretName: grafana-devopsbyexample-io-key-pair
   rules:
   - host: grafana.devopsbyexample.io
     http:
