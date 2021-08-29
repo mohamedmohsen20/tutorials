@@ -15,4 +15,3 @@ spec:
         route53:
           region: us-east-1
           hostedZoneID: Z00637903L4LNI5ZNF0EQ
-          role: arn:aws:iam::424432388155:role/cert-manager-acme
