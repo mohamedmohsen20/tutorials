@@ -5,15 +5,15 @@ metadata:
   name: grafana
   namespace: monitoring
   annotations:
-    cert-manager.io/issuer: letsencrypt-dns01-staging
+    cert-manager.io/issuer: letsencrypt-dns01-prod
 spec:
   ingressClassName: external-nginx
   tls:
   - hosts:
-    - grafana-v3.monitoring.devopsbyexample.io
-    secretName: grafana-v3-monitoring-devopsbyexample-io-key-pair
+    - grafana-v4.monitoring.devopsbyexample.io
+    secretName: grafana-v4-monitoring-devopsbyexample-io-key-pair
   rules:
-  - host: grafana-v3.monitoring.devopsbyexample.io
+  - host: grafana-v4.monitoring.devopsbyexample.io
     http:
       paths:
       - path: /

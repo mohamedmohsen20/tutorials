@@ -10,10 +10,10 @@ spec:
   ingressClassName: external-nginx
   tls:
   - hosts:
-    - prometheus-v3.devopsbyexample.io
-    secretName: prometheus-v3-devopsbyexample-io-key-pair
+    - prometheus-v4.devopsbyexample.io
+    secretName: prometheus-v4-devopsbyexample-io-key-pair
   rules:
-  - host: prometheus-v3.devopsbyexample.io
+  - host: prometheus-v4.devopsbyexample.io
     http:
       paths:
       - path: /

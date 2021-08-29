@@ -325,18 +325,19 @@ kubectl apply -f example-4/2-prometheus-ing.yaml
 ```bash
 kubectl get Certificates -n monitoring
 kubectl describe Certificates \
-  prometheus-v3-devopsbyexample-io-key-pair -n monitoring
+  prometheus-v4-devopsbyexample-io-key-pair -n monitoring
 
 kubectl get CertificateRequests -n monitoring
 kubectl describe CertificateRequests \
-  prometheus-v3-devopsbyexample-io-key-pair-ss2h8 -n monitoring
+  prometheus-v4-devopsbyexample-io-key-pair-ss2h8 -n monitoring
 
 kubectl get Orders -n monitoring
 kubectl describe Orders \
-  prometheus-v3-devopsbyexample-io-key-pair-ss2h8-98152280 -n monitoring
+  prometheus-v4-devopsbyexample-io-key-pair-ss2h8-98152280 -n monitoring
 
+kubectl get Challenges -n monitoring
 kubectl describe Challenges \
-  prometheus-v3-devopsbyexample-io-key-pair-ss2h8-9815-2542798625 -n monitoring
+  prometheus-v4-devopsbyexample-io-key-pair-2zjpw-9815-4236669664 -n monitoring
 ```
 
 - Make sure that all pods are up in monitoring namespace including `cm-acme-http-solver-<id>`
@@ -349,13 +350,23 @@ kubectl get pods -n monitoring
 kubectl get ing -n monitoring
 ```
 
+- Print out acme ing
+```bash
+kubectl get ing cm-acme-http-solver-lxtws -o yaml -n monitoring
+```
 
+- Watch Certificates and Challenges
+```bash
+watch -n 1 -t kubectl get certificates -n monitoring
+watch -n 1 -t kubectl get Challenges -n monitoring
+```
 
+- Create CNAME for `prometheus-v4.devopsbyexample.io`
+
+- Go to `https://prometheus-v4.devopsbyexample.io`
 
 ## Delegate a Subdomain to Route53
 > [Creating a subdomain that uses Amazon Route 53 as the DNS service without migrating the parent domain](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
-
-## Monitor Cert Manager with Prometheus and Grafana
 
 - Create `monitoring.devopsbyexample.io` Route53 hosted zone
 
@@ -392,7 +403,7 @@ dig +short test.monitoring.devopsbyexample.io
         "route53:ChangeResourceRecordSets",
         "route53:ListResourceRecordSets"
       ],
-      "Resource": "arn:aws:route53:::hostedzone/Z00637903L4LNI5ZNF0EQ"
+      "Resource": "arn:aws:route53:::hostedzone/<id>"
     }
   ]
 }
@@ -425,14 +436,12 @@ kubectl get deployment -n cert-manager
 kubectl edit deployment cert-083-cert-manager -n cert-manager
 ```
 ```yaml
-spec:
-  template:
-    spec:
-      securityContext:
-        fsGroup: 1001
+- --issuer-ambient-credentials
 ```
-```yaml
-- --issuer-ambient-credentials=true
+
+- Make sure pod restarted
+```bash
+kubectl get pods -n cert-manager
 ```
 
 - This change can be inclused to Helm Chart (include to `cert-manager-values.yaml` before installing or upgrade Helm release)
@@ -440,9 +449,6 @@ spec:
 serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: arn:aws:iam::424432388155:role/cert-manager-acme
-securityContext:
-  enabled: true
-  fsGroup: 1001
 extraArgs: 
 - --issuer-ambient-credentials
 ```
@@ -451,24 +457,34 @@ extraArgs:
 
 - Create Issuer to use dns-01 challenge
   - `example-5/0-letsencrypt-staging-dns01-issuer.yaml`
+  - `example-5/1-letsencrypt-prod-dns01-issuer.yaml`
+  - `example-5/2-grafana-ing.yaml`
 
+- Watch Certificates and Challenges
 ```bash
-kubectl apply -f example-5/0-letsencrypt-staging-dns01-issuer.yaml
+watch -n 1 -t kubectl get certificates -n monitoring
+watch -n 1 -t kubectl get challenges -n monitoring
 ```
 
-- List Issuers in monitoring namespace
 ```bash
-kubectl get issuers -n monitoring
+kubectl apply -f example-5
 ```
 
-- Describe `letsencrypt-dns01-staging` issuer
+- Go to Route53 to get TXT record
+
+- Create CNAME for grafana-v4.monitoring.devopsbyexample.io
+
+- Go to `https://grafana-v4.monitoring.devopsbyexample.io`
+
+- Check logs
 ```bash
-kubectl describe issuer letsencrypt-dns01-staging -n monitoring
+kubectl get pods -n cert-manager
+kubectl logs -f <pod> -n cert-manager
 ```
 
 https://cert-manager.io/docs/configuration/acme/dns01/route53/
 
-## Monitor Certificates with Grafana
+## Monitor Cert Manager with Prometheus and Grafana
 
 ## Clean Up
 - Remove Helm repo
