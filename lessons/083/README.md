@@ -14,7 +14,6 @@
 - What is PKI(Public key infrastructure)?
 - Cert manager components
 - Difference between Issuer vs ClusterIssuer (Namespaced/K8s secrets location)
-- 1,2 use cases for Internal services such as Grafana, example 3 for publicly facing
 - How DNS works and how to resolve private DNS such as route53
 
 ## Deploy Prometheus on Kubernetes
@@ -42,7 +41,7 @@ helm repo add jetstack \
 helm repo update
 ```
 
-- Create `values.yaml` file to override default variables
+- Create `cert-manager-values.yaml` file to override default variables
 
 - Search for cert-manager
 
@@ -112,7 +111,9 @@ kubectl get secrets -n cert-manager
 
 - Get x509 certificate
 ```bash
-kubectl get secrets devopsbyexample-io-key-pair -o yaml -n cert-manager
+kubectl get secrets devopsbyexample-io-key-pair \
+  -o yaml \
+  -n cert-manager
 ```
 
 - Decode base64 certificte
@@ -147,7 +148,9 @@ kubectl get secrets -n staging
 
 - Get x509 certificate
 ```bash
-kubectl get secrets blog-devopsbyexample-io-key-pair -o yaml -n staging
+kubectl get secrets blog-devopsbyexample-io-key-pair \
+  -o yaml \
+  -n staging
 ```
 
 - Decode base64 certificte
@@ -190,8 +193,11 @@ helm install ing-083 ingress-nginx/ingress-nginx \
 
 - Deploy Grafana using YAML
   - `grafana/0-secret.yaml`
-  - `grafana/1-deployment.yaml`
-  - `grafana/2-service.yaml`
+  - `grafana/1-datasources.yaml`
+  - `grafana/2-dashboard-providers.yaml`
+  - `grafana/3-cert-manager.yaml`
+  - `grafana/4-deployment.yaml`
+  - `grafana/5-service.yaml`
 
 ```bash
 kubectl apply -f grafana
@@ -461,34 +467,34 @@ kubectl describe issuer letsencrypt-dns01-staging -n monitoring
 
 https://cert-manager.io/docs/configuration/acme/dns01/route53/
 
+## Monitor Certificates with Grafana
+
 ## Clean Up
 - Remove Helm repo
 ```bash
 helm repo remove jetstack
 helm repo remove ingress-nginx
 ```
-- Delete Helm release
-```bash
-helm delete lesson-083 -n cert-manager
-```
-- List all cert-manager resources
-```bash
-kubectl get Issuers,ClusterIssuers,Certificates,CertificateRequests,Orders,Challenges -A
-```
+
 - Remove wireshark
 ```bash
 brew remove wireshark
 ```
 - Remove `devopsbyexample.io` CA
 
+- Delete Route53 hosted zone `monitoring.devopsbyexample.io`
+
+- Delete all DNS records in google domains
+
+- Delete IAM Role `cert-manager-acme`
+
+- Delete IAM Policy `CertManagerRoute53Access`
 
 ## Notes
 http://seclists.org/tcpdump/2004/q4/95
 apture HTTP GET requests. This looks for the bytes 'G', 'E', 'T', and ' ' (hex values 47, 45, 54, and 20) just after the TCP header. "tcp[12:1] & 0xf0) >> 2" figures out the TCP header length. From Jefferson Ogata via the tcpdump-workers mailing list.
 
 - use case for grafana since it's going to be used internally only - protect password with https
-
-- can i show how to use wireshark to snif passwords???? man in the middle
 
 - use case for private dns zones (no need VPN)
 
