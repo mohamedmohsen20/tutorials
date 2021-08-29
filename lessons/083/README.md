@@ -437,7 +437,7 @@ securityContext:
   enabled: true
   fsGroup: 1001
 extraArgs: 
-- --issuer-ambient-credentials=true
+- --issuer-ambient-credentials
 ```
 
 ## Resolve DNS-01 challenge with cert-manager (Example 5)

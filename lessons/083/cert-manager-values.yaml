@@ -5,3 +5,12 @@ prometheus:
   servicemonitor:
     enabled: true
     prometheusInstance: lesson-083
+# DNS-01 Route53
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::424432388155:role/cert-manager-acme
+securityContext:
+  enabled: true
+  fsGroup: 1001
+extraArgs: 
+- --issuer-ambient-credentials
