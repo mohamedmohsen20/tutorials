@@ -92,7 +92,7 @@ kubectl port-forward svc/prometheus-operated 9090 -n monitoring
 - Go to Prometheus targets `http://localhost:9090`
 
 ## Generate Self Signed Certificate (Example 1)
-- Create SelfSigned ClusterIssuer `example-1/0-self-signed-Issuer.yaml`
+- Create SelfSigned ClusterIssuer `example-1/0-self-signed-issuer.yaml`
 
 - Generate Self Signed Certificate `example-1/1-ca-certificate.yaml`
 ```bash
@@ -180,6 +180,8 @@ helm repo update
 helm search repo ingress-nginx
 ```
 
+- Create `nginx-ingress-values.yaml` without ACME section
+
 - Install Nginx Ingress
 ```bash
 helm install ing-083 ingress-nginx/ingress-nginx \
@@ -187,6 +189,16 @@ helm install ing-083 ingress-nginx/ingress-nginx \
   --version 4.0.1 \
   --values nginx-ingress-values.yaml \
   --create-namespace
+```
+
+- Get pods
+```bash
+kubectl get pods -n ingress
+```
+
+- Get Ingress Class
+```bash
+kubectl get ingressclass
 ```
 
 ## Deploy Grafana on Kubernetes
@@ -208,7 +220,7 @@ kubectl apply -f grafana
 kubectl get svc -n monitoring
 ```
 
-- Create `HTTP` ingress
+- Create `HTTP` ingress without TLS section
   - `example-3/grafana.yaml`
 
 ```bash
@@ -222,7 +234,9 @@ kubectl get ing -n monitoring
 
 - Create `CNAME` record for `grafana.devopsbyexample.io`
 
-- Access `http://grafana.devopsbyexample.io`
+- Go to data sources and dashboards `http://grafana.devopsbyexample.io`
+
+- Logout
 
 - Install wireshark
 ```bash
@@ -241,7 +255,7 @@ ifconfig
 
 - Get POST TCP packets
 ```bash
-sudo tshark -i en1 -x -f "host 52.207.88.124 and port 80 and tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x504f5354" > post.pcap
+sudo tshark -i en1 -x -f "host grafana.devopsbyexample.io and port 80 and tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x504f5354" > post.pcap
 ```
 
 ```bash
@@ -260,6 +274,11 @@ kubectl apply -f example-3
 kubectl get certificates -n monitoring
 ```
 
+- Get ingresses in monitoring ns
+```bash
+kubectl get ing -n monitoring
+```
+
 - Go to `https://grafana.devopsbyexample.io` to check TLS certs
 
 - Add CA to the keychain
@@ -268,14 +287,8 @@ kubectl get certificates -n monitoring
 
 - Listen on port 443
 
-
 ```bash
-sudo tshark -i en1 -x -f "host 52.207.88.124 and port 443" > login-https.pcap
-```
-
-- Read the TCP packets
-```bash
-cat login-https.pcap
+sudo tshark -i en1 -x -f "port 443"
 ```
 
 ## Secure NGINX ingress with Let's Encrypt & ACME (Example 3)
@@ -296,47 +309,34 @@ kubectl get issuers -n monitoring
 
 - If it's not ready describe to get error message
 ```bash
-kubectl describe issuer letsencrypt-prod -n monitoring
+kubectl describe issuer letsencrypt-http01-prod -n monitoring
 ```
 
 - Create Prometheus ingress with `letsencrypt-prod` issuer
   - `example-4/2-prometheus-ing.yaml`
 
-- Watch CRDs
-```bash
-kubectl get Certificates -n monitoring --watch
-kubectl get CertificateRequests -n monitoring --watch
-kubectl get Orders -n monitoring --watch
-kubectl get Challenges -n monitoring --watch
-```
 
 - Apply Prometheus ingress
 ```bash
 kubectl apply -f example-4/2-prometheus-ing.yaml
 ```
 
-- Describe certificate first
+- Get CRDs
 ```bash
-kubectl get certificate -n monitoring
-kubectl describe certificate prometheus-devopsbyexample-io-key-pair -n monitoring
-```
+kubectl get Certificates -n monitoring
+kubectl describe Certificates \
+  prometheus-v3-devopsbyexample-io-key-pair -n monitoring
 
-- Describe certificate request
-```bash
-kubectl get certificaterequests -n monitoring
-kubectl describe certificaterequests prometheus-devopsbyexample-io-key-pair-<id> -n monitoring
-```
+kubectl get CertificateRequests -n monitoring
+kubectl describe CertificateRequests \
+  prometheus-v3-devopsbyexample-io-key-pair-ss2h8 -n monitoring
 
-- Describe order
-```bash
-kubectl get orders -n monitoring
-kubectl describe orders prometheus-devopsbyexample-io-key-pair-<id> -n monitoring
-```
+kubectl get Orders -n monitoring
+kubectl describe Orders \
+  prometheus-v3-devopsbyexample-io-key-pair-ss2h8-98152280 -n monitoring
 
-- Describe challenge
-```bash
-kubectl get challenges -n monitoring
-kubectl describe challenges prometheus-devopsbyexample-io-key-pair-<id> -n monitoring
+kubectl describe Challenges \
+  prometheus-v3-devopsbyexample-io-key-pair-ss2h8-9815-2542798625 -n monitoring
 ```
 
 - Make sure that all pods are up in monitoring namespace including `cm-acme-http-solver-<id>`
@@ -348,6 +348,7 @@ kubectl get pods -n monitoring
 ```bash
 kubectl get ing -n monitoring
 ```
+
 
 
 
